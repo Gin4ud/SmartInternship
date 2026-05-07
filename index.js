@@ -3,70 +3,53 @@ const app = express();
 
 app.use(express.json());
 
+function validerNotes(noteTechnique, noteSoftSkills) {
+  if (noteTechnique == null) {
+    return { error: "Note Technique manquante", statusCode: 400 };
+  }
+  if (noteSoftSkills == null) {
+    return { error: "Note Soft Skills manquante", statusCode: 400 };
+  }
+  return null;
+}
+
+function calculerScore(noteTechnique, noteSoftSkills, livreEnAvance) {
+  let score = noteTechnique + noteSoftSkills;
+  if (livreEnAvance === true) {
+    score += 2;
+  }
+  return score;
+}
+
+function plafonnerScore(score, joursAbsence) {
+  if (joursAbsence > 5 && score > 12) {
+    return 12;
+  }
+  return score;
+}
+
+function determinerStatut(score, joursAbsence, commentaireTuteur) {
+  if (joursAbsence > 5) {
+    return "Pas de proposition";
+  }
+  if (score > 16 && commentaireTuteur === "Insuffisant") {
+    return "Embauche bloquée";
+  }
+  if (score > 16) {
+    return "Proposition d'Embauche";
+  }
+  return "Pas de proposition";
+}
+
 function evaluerStagiaire(noteTechnique, noteSoftSkills, joursAbsence, livreEnAvance, commentaireTuteur) {
-    let statut = "";
-    let scoreFinal = 0;
+  const erreur = validerNotes(noteTechnique, noteSoftSkills);
+  if (erreur) return erreur;
 
-    if (noteTechnique != null) {
-        if (noteSoftSkills != null) {
-            scoreFinal = noteTechnique + noteSoftSkills;
+  const scoreAvantPlafond = calculerScore(noteTechnique, noteSoftSkills, livreEnAvance);
+  const scoreFinal = plafonnerScore(scoreAvantPlafond, joursAbsence);
+  const statut = determinerStatut(scoreFinal, joursAbsence, commentaireTuteur);
 
-            if (livreEnAvance === true) {
-                scoreFinal = scoreFinal + 2;
-
-                if (joursAbsence > 5) {
-                    if (scoreFinal > 12) {
-                        scoreFinal = 12; // Plafonné à 12
-                        // Condition inutile mais qui ajoute de la complexité
-                        if (scoreFinal > 16) {
-                            statut = "Proposition d'Embauche";
-                        } else {
-                            statut = "Pas de proposition";
-                        }
-                    }
-                    else {
-                        statut = "Pas de proposition";
-                    }
-                } else {
-                    if (scoreFinal > 16) {
-                        if (commentaireTuteur === "Insuffisant") {
-                            statut = "Embauche bloquée";
-                        } else {
-                            statut = "Proposition d'Embauche";
-                        }
-                    } else {
-                        statut = "Pas de proposition";
-                    }
-                }
-            } else {
-                if (joursAbsence > 5) {
-                    if (scoreFinal > 12) {
-                        scoreFinal = 12;
-                        statut = "Pas de proposition";
-                    }
-                    else {
-                        statut = "Pas de proposition";
-                    }
-                } else {
-                    if (scoreFinal > 16) {
-                        if (commentaireTuteur === "Insuffisant") {
-                            statut = "Embauche bloquée";
-                        } else {
-                            statut = "Proposition d'Embauche";
-                        }
-                    } else {
-                        statut = "Pas de proposition";
-                    }
-                }
-            }
-        } else {
-            return { error: "Note Soft Skills manquante", statusCode: 400 };
-        }
-    } else {
-        return { error: "Note Technique manquante manquante", statusCode: 400 };
-    }
-
-    return { score: scoreFinal, statut: statut };
+  return { score: scoreFinal, statut };
 }
 
 app.post('/api/intern-eval', (req, res) => {

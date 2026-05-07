@@ -6,7 +6,7 @@ describe('evaluerStagiaire', () => {
     test('retourne une erreur si noteTechnique est null', () => {
       const result = evaluerStagiaire(null, 8, 0, false, 'Bon');
       expect(result).toEqual({
-        error: 'Note Technique manquante manquante',
+        error: 'Note Technique manquante',
         statusCode: 400
       });
     });
@@ -110,7 +110,7 @@ describe('validation des deux notes manquantes', () => {
   test('retourne une erreur noteTechnique en priorité si les deux notes sont null', () => {
     const result = evaluerStagiaire(null, null, 0, false, 'Bien');
     expect(result).toEqual({
-      error: 'Note Technique manquante manquante',
+      error: 'Note Technique manquante',
       statusCode: 400
     });
   });
