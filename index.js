@@ -65,18 +65,7 @@ app.post('/api/intern-eval', (req, res) => {
         return res.status(resultat.statusCode).json({ error: resultat.error });
     }
 
-    res.json(resultat);
-
-
-});
-
-app.get('/api/test', (req, res) => {
-    console.log("Route /api/test appelée avec succès");
-    res.json({
-        message: "Le serveur fonctionne !",
-        status: "OK",
-        timestamp: new Date().toISOString()
-    });
+    return res.json(resultat);
 });
 
 if (require.main === module) {

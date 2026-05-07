@@ -17,19 +17,22 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --ignore-scripts       
 
       - name: Run Linter (ESLint)
         run: npm run lint
 
       - name: Run Tests
-        run: npm test
+        run: npm test -- --coverage --coverageReporters=lcov
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarcloud-github-action@e44258b109568baa0df60ed515909fc6c72cba92
         with:
           args: >
             -Dsonar.projectKey=Gin4ud_SmartInternship
             -Dsonar.organization=smart-internship
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.exclusions=**/*.test.js,**/*.spec.js
+            -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
