@@ -32,7 +32,7 @@ jobs:
             -Dsonar.projectKey=Gin4ud_SmartInternship
             -Dsonar.organization=smart-internship
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.exclusions=**/*.test.js,**/*.spec.js
+            -Dsonar.exclusions=**/*.test.js,**/*.spec.js, coverage/**
             -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
